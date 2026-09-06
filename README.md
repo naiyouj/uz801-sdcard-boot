@@ -459,10 +459,18 @@ GitHub 单文件限制 100MB，这些文件放不进仓库：
 | `boot_orig.img` | 67 MB | 原版 boot（救砖用）|
 | `uz801-sdcard-*.img.gz` | 271 MB | 可烧录系统镜像 |
 
-**获取方式（三选一）：**
+**获取方式：**
 
-1. **用脚本生成**（推荐）—— 从你自己的 boot.img 出发，跑 `scripts/bootimg/build_bootimg2.py`
-2. **从 Release 下载** —— 如果仓库开了 Release，附件里会有
+1. **从 Release 下载**（最快）—— [v1.0 Release](https://github.com/naiyouj/uz801-sdcard-boot/releases/tag/v1.0) 里三个文件都有：
+
+   | 文件 | MD5 |
+   |---|---|
+   | `boot_sdcard_v2.img` | `dd9cedffdb866aa6f8f3394e60251ebd` |
+   | `boot_orig.img` | `85f9c9fceacc4736ed45bcc657190305` |
+   | `uz801-sdcard-20260906.img.gz` | `0de8e837d2d11d0ee66ee3e3b856d175` |
+
+2. **用脚本生成** —— 从你自己的 `boot.img` 出发，跑 `scripts/bootimg/build_bootimg2.py`。
+   **固件批次不同（内核不是 5.15）时必须走这条**，Release 里的镜像只适配 `5.15.0-jsbsbxjxh66+`
 3. **开个 Issue** —— 说明你的内核版本，我帮你生成
 
 ---

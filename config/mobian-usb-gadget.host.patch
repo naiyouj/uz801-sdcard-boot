@@ -1,0 +1,49 @@
+# ============================================================
+# 让 UZ801 的 USB 口进入 host 模式
+#
+# 背景: 板子上 USB ID 脚（pinctrl pin110 / 全局 GPIO 500）是浮空的，
+#       上拉为高 = device 模式，所以系统默认跑在 gadget(adb/rndis) 模式，
+#       插 hub / 读卡器都没反应。
+#
+# 正解: 写 chipidea 的 debugfs role 接口，纯软件切换，不用 OTG 线。
+#       ⚠️ 注意路径中间有 usb/ 这一层，不是 /sys/kernel/debug/ci_hdrc.0/role
+# ============================================================
+
+--- 修改文件: /usr/sbin/mobian-usb-gadget
+
+--- 在 setup() { 的下一行插入:
+
+setup() {
+    # ---- 强制 USB host 模式（板上 ID 脚浮空，无需 OTG 线）----
+    # 想恢复 device(adb/rndis) 模式: 把 host 改成 gadget，或直接注释掉
+    echo host > /sys/kernel/debug/usb/ci_hdrc.0/role
+
+    ...原文件内容...
+
+
+# ============================================================
+# 手动验证 / 临时切换
+# ============================================================
+#   cat /sys/kernel/debug/usb/ci_hdrc.0/role      # 查看当前角色
+#   echo host   > /sys/kernel/debug/usb/ci_hdrc.0/role
+#   echo gadget > /sys/kernel/debug/usb/ci_hdrc.0/role
+#
+# 改完重启或重跑: /usr/sbin/mobian-usb-gadget setup
+#
+# ============================================================
+# ⚠️ 踩过的坑
+# ============================================================
+# 1. 不要试图用软件拉低 ID 脚（GPIO 500）来切 host。
+#    实测会导致内核 Oops（usb_put_function_instance+0x24/0x40），
+#    systemd 半死，22 端口连得上但没有 banner，只能拔电重启。
+#
+# 2. 不要 unbind extcon-usb-gpio。
+#    extcon 用 gpiod_get 独占 GPIO 500，unbind 后 ci_hdrc probe
+#    找不到 extcon 会 -EPROBE_DEFER，USB 直接不工作。
+#    恢复套路:
+#      echo 78d9000.usb > /sys/bus/platform/drivers/msm_hsusb/bind
+#      pkill -9 -f adbd
+#      /usr/sbin/mobian-usb-gadget setup
+#
+# 3. SD 卡启动场景下，boot.img 的 DTB 已经把 dr_mode 改成 host，
+#    这个补丁就变成冗余保险了，留着无害。

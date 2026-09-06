@@ -1,0 +1,18 @@
+# ============================================================
+# SD 卡系统的 /etc/fstab
+# 放到 SD 卡 rootfs 的 /etc/fstab
+#
+# 用 PARTUUID 而不是 /dev/sdaN:
+#   PARTUUID = MBR 磁盘签名(0x8306c78f) + 分区号
+#   只要卡的磁盘签名一致，不管设备名怎么变都能正确挂载
+# ============================================================
+
+# <file system>          <dir>        <type>  <options>                <dump> <pass>
+PARTUUID=8306c78f-01     /            ext4    defaults,noatime          0      1
+PARTUUID=8306c78f-02     /mnt/data    ext4    defaults,nofail,noatime   0      2
+PARTUUID=8306c78f-03     none         swap    sw,nofail                 0      0
+
+# 注意:
+#   1. nofail 很重要 —— 万一某个分区有问题，系统照样能起来
+#   2. 如果想让 swap 也生效，先确认 sda3 已经 mkswap 过
+#   3. 扩展卡尾剩余空间后(sd-expand.sh)，会多一条 /mnt/data2

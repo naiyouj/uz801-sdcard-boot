@@ -456,10 +456,18 @@ GitHub caps individual files at 100 MB, so these are not in the repo:
 | `boot_orig.img` | 67 MB | Stock boot (for unbricking) |
 | `uz801-sdcard-*.img.gz` | 271 MB | Flashable system image |
 
-**How to get them (pick one):**
+**How to get them:**
 
-1. **Generate with the scripts** (recommended) — start from your own boot.img and run `scripts/bootimg/build_bootimg2.py`
-2. **Download from Releases** — if the repo has them attached
+1. **Download from Releases** (fastest) — all three are in [v1.0](https://github.com/naiyouj/uz801-sdcard-boot/releases/tag/v1.0):
+
+   | File | MD5 |
+   |---|---|
+   | `boot_sdcard_v2.img` | `dd9cedffdb866aa6f8f3394e60251ebd` |
+   | `boot_orig.img` | `85f9c9fceacc4736ed45bcc657190305` |
+   | `uz801-sdcard-20260906.img.gz` | `0de8e837d2d11d0ee66ee3e3b856d175` |
+
+2. **Generate with the scripts** — start from your own `boot.img` and run `scripts/bootimg/build_bootimg2.py`.
+   **Required if your firmware batch differs** (kernel other than 5.15) — the Release images only match `5.15.0-jsbsbxjxh66+`
 3. **Open an issue** — tell me your kernel version and I will build one
 
 ---
